@@ -1,6 +1,8 @@
+package PuzzleSolver;
+
 import java.util.*;
 
-public class PuzzleSolver {
+public class Algorithms {
     private static final int[][] moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
     private static final String[] moveNames = {"U", "D", "L", "R"};
 
@@ -11,14 +13,14 @@ public class PuzzleSolver {
             int newY = state.zeroY + moves[i][1];
 
             if (newX >= 0 && newX < height && newY >= 0 && newY < width) {
-                List<List<Integer>> newBoard = new ArrayList<>();
-                for (List<Integer> row : state.board) {
-                    newBoard.add(new ArrayList<>(row));
+                int[][] newBoard = new int[height][width];
+                for (int r = 0; r < height; r++) {
+                    newBoard[r] = state.board[r].clone();
                 }
 
                 // Zamiana wartości w macierzy
-                newBoard.get(state.zeroX).set(state.zeroY, newBoard.get(newX).get(newY));
-                newBoard.get(newX).set(newY, 0);
+                newBoard[state.zeroX][state.zeroY] = newBoard[newX][newY];
+                newBoard[newX][newY] = 0;
 
                 List<String> newPath = new ArrayList<>(state.path);
                 newPath.add(moveNames[i]);
@@ -29,27 +31,25 @@ public class PuzzleSolver {
         return nextStates;
     }
 
-    private static List<List<Integer>> generateGoalBoard(int width, int height) {
-        List<List<Integer>> goalBoard = new ArrayList<>();
+    private static int[][] generateGoalBoard(int width, int height) {
+        int[][] goalBoard = new int[height][width];
         int number = 1;
         for (int i = 0; i < height; i++) {
-            List<Integer> row = new ArrayList<>();
             for (int j = 0; j < width; j++) {
-                row.add(number++);
+                goalBoard[i][j] = number++;
             }
-            goalBoard.add(row);
         }
-        goalBoard.get(height - 1).set(width - 1, 0);
+        goalBoard[height - 1][width - 1] = 0;
         return goalBoard;
     }
 
-    public static List<String> solveDFS(List<List<Integer>> startState, int width, int height, int maxDepth) {
-        List<List<Integer>> goalBoard = generateGoalBoard(width, height);
+    public static List<String> solveDFS(int[][] startState, int width, int height, int maxDepth) {
+        int[][] goalBoard = generateGoalBoard(width, height);
         int zeroX = 0, zeroY = 0;
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (startState.get(i).get(j) == 0) {
+                if (startState[i][j] == 0) {
                     zeroX = i;
                     zeroY = j;
                 }
@@ -63,7 +63,7 @@ public class PuzzleSolver {
         while (!stack.isEmpty()) {
             State currentState = stack.pop();
 
-            if (currentState.board.equals(goalBoard)) {
+            if (Arrays.deepEquals(currentState.board, goalBoard)) {
                 return currentState.path;
             }
 
@@ -79,13 +79,13 @@ public class PuzzleSolver {
         return new ArrayList<>();
     }
 
-    public static List<String> solveBFS(List<List<Integer>> startState, int width, int height) {
-        List<List<Integer>> goalBoard = generateGoalBoard(width, height);
+    public static List<String> solveBFS(int[][] startState, int width, int height) {
+        int[][] goalBoard = generateGoalBoard(width, height);
         int zeroX = 0, zeroY = 0;
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (startState.get(i).get(j) == 0) {
+                if (startState[i][j] == 0) {
                     zeroX = i;
                     zeroY = j;
                 }
@@ -101,7 +101,7 @@ public class PuzzleSolver {
         while (!queue.isEmpty()) {
             State currentState = queue.poll();
 
-            if (currentState.board.equals(goalBoard)) {
+            if (Arrays.deepEquals(currentState.board, goalBoard)) {
                 return currentState.path;
             }
 
@@ -116,5 +116,3 @@ public class PuzzleSolver {
         return new ArrayList<>();
     }
 }
-
-

@@ -1,14 +1,16 @@
+package PuzzleSolver;
+
 import java.util.*;
 
 class State {
-    List<List<Integer>> board;
+    int[][] board;
     int zeroX, zeroY;
     List<String> path;
 
-    State(List<List<Integer>> b, int x, int y, List<String> p) {
-        this.board = new ArrayList<>();
-        for (List<Integer> row : b) {
-            this.board.add(new ArrayList<>(row));
+    State(int[][] b, int x, int y, List<String> p) {
+        this.board = new int[b.length][b[0].length];
+        for (int i = 0; i < b.length; i++) {
+            System.arraycopy(b[i], 0, this.board[i], 0, b[i].length);
         }
         this.zeroX = x;
         this.zeroY = y;
@@ -17,7 +19,7 @@ class State {
 
     String boardToString() {
         StringBuilder sb = new StringBuilder();
-        for (List<Integer> row : board) {
+        for (int[] row : board) {
             for (int num : row) {
                 sb.append(num).append(",");
             }
@@ -25,4 +27,3 @@ class State {
         return sb.toString();
     }
 }
-
