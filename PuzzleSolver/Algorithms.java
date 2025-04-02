@@ -1,5 +1,6 @@
 package PuzzleSolver;
 
+import java.io.IOException;
 import java.util.*;
 
 public class Algorithms {
@@ -44,6 +45,8 @@ public class Algorithms {
     }
 
     public static List<String> solveDFS(int[][] startState, int width, int height, int maxDepth) {
+        long startTime = System.nanoTime();
+        int visitedStates = 0;
         int[][] goalBoard = generateGoalBoard(width, height);
         int zeroX = 0, zeroY = 0;
 
@@ -62,12 +65,22 @@ public class Algorithms {
 
         while (!stack.isEmpty()) {
             State currentState = stack.pop();
-
+            visitedStates++;
             if (Arrays.deepEquals(currentState.board, goalBoard)) {
+                long endTime = System.nanoTime();
+                double executionTime = (endTime - startTime) / 1000000.0;
+                try {
+                    Utils.writeSolutionFile("bfs-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
+                    Utils.writeAdditionalInfoFile("bfs-dodatkowe-info.txt", currentState.path.size(), visitedStates, 0, maxDepth
+                            ,executionTime);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return currentState.path;
             }
 
             if (currentState.path.size() >= maxDepth) {
+                maxDepth = currentState.path.size();
                 continue;
             }
 
@@ -80,6 +93,9 @@ public class Algorithms {
     }
 
     public static List<String> solveBFS(int[][] startState, int width, int height) {
+        long startTime = System.nanoTime();
+        int visitedStates = 0;
+        int maxDepth = 0;
         int[][] goalBoard = generateGoalBoard(width, height);
         int zeroX = 0, zeroY = 0;
 
@@ -100,8 +116,20 @@ public class Algorithms {
 
         while (!queue.isEmpty()) {
             State currentState = queue.poll();
-
+            visitedStates++;
+            if (currentState.path.size()> maxDepth) {
+                maxDepth = currentState.path.size();
+            }
             if (Arrays.deepEquals(currentState.board, goalBoard)) {
+                long endTime = System.nanoTime();
+                double executionTime = (endTime - startTime) / 1000000.0;
+                try {
+                    Utils.writeSolutionFile("dfs-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
+                    Utils.writeAdditionalInfoFile("dfs-dodatkowe-info.txt", currentState.path.size(), visitedStates, 0, maxDepth
+                            ,executionTime);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return currentState.path;
             }
 

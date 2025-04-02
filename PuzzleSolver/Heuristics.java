@@ -1,4 +1,6 @@
 package PuzzleSolver;
+
+import java.io.IOException;
 import java.util.*;
 
 class Heuristics {
@@ -32,7 +34,10 @@ class Heuristics {
         return nextStates;
     }
 
-    static List<String> solveHeuristics(int[][] startState, int width, int height, int maxDepth, boolean mode) {
+    static List<String> solveHeuristics(int[][] startState, int width, int height, boolean mode) {
+        int visitedStates = 0;
+        int maxDepth = 0;
+        long startTime = System.nanoTime();
         int[][] goalBoard = new int[height][width];
         int number = 1;
         for (int i = 0; i < height; i++) {
@@ -60,13 +65,30 @@ class Heuristics {
         while (!pq.isEmpty()) {
             StateH currentState = pq.poll();
 
+            visitedStates++;
+            if (currentState.path.size() > maxDepth) {
+                maxDepth = currentState.path.size();
+            }
+
             if (Arrays.deepEquals(currentState.board, goalBoard)) {
+                long endTime = System.nanoTime();
+                double executionTime = (endTime - startTime) / 1000000.0;
+                String whichHeuristic = "";
+                if (mode) {
+                    whichHeuristic = "hamming";
+                } else {
+                    whichHeuristic = "manhattan";
+                }
+                try {
+                    Utils.writeSolutionFile("heurystyki" + whichHeuristic + "-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
+                    Utils.writeAdditionalInfoFile("heurystyki" + whichHeuristic + "-dodatkowe-info.txt", currentState.path.size(), visitedStates, 0, maxDepth
+                            , executionTime);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return currentState.path;
             }
 
-            if (currentState.path.size() >= maxDepth) {
-                return new ArrayList<>();
-            }
 
             List<StateH> nextStates = getNextStates(currentState, width, height, goalBoard, mode);
             pq.addAll(nextStates);

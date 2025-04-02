@@ -1,7 +1,7 @@
 package PuzzleSolver;
 import java.util.List;
 
-public class main {
+public class Main {
     public static void main(String[] args) {
         // Inicjalizacja układanki 15 (rozmiar 4x4)
         int[][] startState = {
@@ -17,22 +17,35 @@ public class main {
 
         // Wywołanie funkcji DFS
         System.out.println("Rozwiązywanie za pomocą DFS:");
+        long startTime = System.nanoTime();
         List<String> resultDFS = Algorithms.solveDFS(startState, width, height, maxDepth);
+        long endTime = System.nanoTime();
+        double executionTime = (endTime - startTime) / 1000000.0;
         System.out.println(resultDFS.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultDFS.size() + " ruchach: " + String.join(" ", resultDFS));
-
+        System.out.println("Czas szukania rozwiazania: "+ executionTime + "ms");
 // Wywołanie funkcji BFS
         System.out.println("\nRozwiązywanie za pomocą BFS:");
+        startTime = System.nanoTime();
         List<String> resultBFS = Algorithms.solveBFS(startState, width, height);
+        endTime = System.nanoTime();
+        executionTime = (endTime - startTime) / 1000000.0;
         System.out.println(resultBFS.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultBFS.size() + " ruchach: " + String.join(" ", resultBFS));
-
+        System.out.println("Czas szukania rozwiazania: "+ executionTime + "ms");
 // Wywołanie funkcji Hamming
         System.out.println("\nRozwiązywanie za pomocą Hamming:");
-        List<String> resultHamming = Heuristics.solveHeuristics(startState, width, height, maxDepth, true);
+        startTime = System.nanoTime();
+        List<String> resultHamming = Heuristics.solveHeuristics(startState, width, height, true);
+        endTime = System.nanoTime();
+        executionTime = (endTime - startTime) / 1000000.0;
         System.out.println(resultHamming.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultHamming.size() + " ruchach: " + String.join(" ", resultHamming));
-
+        System.out.println("Czas szukania rozwiazania: "+ executionTime + "ms");
 // Wywołanie funkcji Manhattan
         System.out.println("\nRozwiązywanie za pomocą Manhattan:");
-        List<String> resultManhattan = Heuristics.solveHeuristics(startState, width, height, maxDepth, false);
+        startTime = System.nanoTime();
+        List<String> resultManhattan = Heuristics.solveHeuristics(startState, width, height, false);
+        endTime = System.nanoTime();
+        executionTime = (endTime - startTime) / 1000000.0;
         System.out.println(resultManhattan.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultManhattan.size() + " ruchach: " + String.join(" ", resultManhattan));
+        System.out.println("Czas szukania rozwiazania: "+ executionTime + "ms");
     }
 }
