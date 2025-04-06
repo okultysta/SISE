@@ -1,5 +1,3 @@
-package PuzzleSolver;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -61,7 +59,12 @@ class Heuristics {
         StateH start = new StateH(startState, zeroX, zeroY, new ArrayList<>());
         start.hValue = mode ? start.calculateHamming(goalBoard) : start.calculateManhattan(goalBoard);
         pq.add(start);
-
+        String whichHeuristic = "";
+        if (mode) {
+            whichHeuristic = "hamming";
+        } else {
+            whichHeuristic = "manhattan";
+        }
         while (!pq.isEmpty()) {
             StateH currentState = pq.poll();
 
@@ -73,12 +76,7 @@ class Heuristics {
             if (Arrays.deepEquals(currentState.board, goalBoard)) {
                 long endTime = System.nanoTime();
                 double executionTime = (endTime - startTime) / 1000000.0;
-                String whichHeuristic = "";
-                if (mode) {
-                    whichHeuristic = "hamming";
-                } else {
-                    whichHeuristic = "manhattan";
-                }
+
                 try {
                     Utils.writeSolutionFile("heurystyki" + whichHeuristic + "-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
                     Utils.writeAdditionalInfoFile("heurystyki" + whichHeuristic + "-dodatkowe-info.txt", currentState.path.size(), visitedStates, 0, maxDepth
@@ -93,7 +91,13 @@ class Heuristics {
             List<StateH> nextStates = getNextStates(currentState, width, height, goalBoard, mode);
             pq.addAll(nextStates);
         }
+        try {
+            Utils.writeSolutionFile("heurystyki" + whichHeuristic + "-rozwiazanie.txt", -1, "");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return new ArrayList<>();
+
     }
 }
 

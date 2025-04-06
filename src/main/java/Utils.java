@@ -1,12 +1,10 @@
-package PuzzleSolver;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class Utils {
 
-    public static State readStateFromFile(String filename) throws IOException {
+    public static int[][] readStateFromFile(String filename) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String firstLine = br.readLine();
             if (firstLine == null) {
@@ -35,7 +33,7 @@ public class Utils {
                 }
             }
 
-            return new State(puzzle, puzzle.length, puzzle[0].length, new ArrayList<>());
+            return puzzle;
         }
     }
     public static void writeSolutionFile(String filename, int solutionLength, String moves) throws IOException {
