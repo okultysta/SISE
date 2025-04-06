@@ -1,4 +1,3 @@
-package PuzzleSolver;
 import java.util.*;
 
 class StateH {
