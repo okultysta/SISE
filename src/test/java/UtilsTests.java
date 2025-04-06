@@ -13,7 +13,7 @@ class UtilsTest {
 
     @Test
     void testReadStateFromFile_validInput() throws IOException {
-        String inputFile = TEMP_DIR + "/test_puzzle.txt";
+        String inputFile = TEMP_DIR + "/4x4_przykladowa.txt";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(inputFile))) {
             writer.write("2 3\n");
             writer.write("1 2 3\n");

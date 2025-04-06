@@ -2,12 +2,12 @@ import java.io.IOException;
 import java.util.*;
 
 public class Algorithms {
-    private static final int[][] moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-    private static final String[] moveNames = {"U", "D", "L", "R"};
+    private static final int[][] defaultMoves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};  // U, D, L, R
+    private static final String[] defaultMoveNames = {"U", "D", "L", "R"};
 
-    private static List<State> getNextStates(State state, int width, int height) {
+    private static List<State> getNextStates(State state, int width, int height, int[][] moves, String[] moveNames) {
         List<State> nextStates = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < moves.length; i++) {
             int newX = state.zeroX + moves[i][0];
             int newY = state.zeroY + moves[i][1];
 
@@ -42,12 +42,13 @@ public class Algorithms {
         return goalBoard;
     }
 
-    public static List<String> solveDFS(int[][] startState, int width, int height, int maxDepth) {
+    public static List<String> solveDFS(int[][] startState, int width, int height, int maxDepth, String moveOrder) {
         long startTime = System.nanoTime();
         int visitedStates = 0;
         int[][] goalBoard = generateGoalBoard(width, height);
         int zeroX = 0, zeroY = 0;
 
+        // Znajdowanie pozycji 0
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (startState[i][j] == 0) {
@@ -61,42 +62,48 @@ public class Algorithms {
         State start = new State(startState, zeroX, zeroY, new ArrayList<>());
         stack.push(start);
 
+        int[][] moves = (int[][]) getMoveOrder(moveOrder)[0];
+        String[] moveNames = (String[]) getMoveOrder(moveOrder)[1];
+
         while (!stack.isEmpty()) {
             State currentState = stack.pop();
             visitedStates++;
+
+            // Sprawdzenie, czy stan jest celem
             if (Arrays.deepEquals(currentState.board, goalBoard)) {
                 long endTime = System.nanoTime();
                 double executionTime = (endTime - startTime) / 1000000.0;
                 try {
-                    Utils.writeSolutionFile("bfs-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
-                    Utils.writeAdditionalInfoFile("bfs-dodatkowe-info.txt", currentState.path.size(), visitedStates, 0, maxDepth
-                            ,executionTime);
+                    Utils.writeSolutionFile("dfs-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
+                    Utils.writeAdditionalInfoFile("dfs-dodatkowe-info.txt", currentState.path.size(), visitedStates, 0, maxDepth, executionTime);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 return currentState.path;
             }
 
+            // Jeśli przekroczył max głębokość, pomijamy stan
             if (currentState.path.size() >= maxDepth) {
-                maxDepth = currentState.path.size();
                 continue;
             }
 
-            for (State nextState : getNextStates(currentState, width, height)) {
+            // Dodanie nowych stanów do stosu
+            for (State nextState : getNextStates(currentState, width, height, moves, moveNames)) {
                 stack.push(nextState);
             }
         }
 
-        return new ArrayList<>();
+        return new ArrayList<>();  // Brak rozwiązania
     }
 
-    public static List<String> solveBFS(int[][] startState, int width, int height) {
+    public static List<String> solveBFS(int[][] startState, int width, int height, String moveOrder) {
         long startTime = System.nanoTime();
         int visitedStates = 0;
         int maxDepth = 0;
         int[][] goalBoard = generateGoalBoard(width, height);
         int zeroX = 0, zeroY = 0;
 
+        // Znajdowanie pozycji 0
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (startState[i][j] == 0) {
@@ -112,26 +119,34 @@ public class Algorithms {
         queue.offer(start);
         visited.add(start.boardToString());
 
+        // Dynamicznie zmieniamy porządek przeszukiwania
+        int[][] moves = (int[][]) getMoveOrder(moveOrder)[0];
+        String[] moveNames = (String[]) getMoveOrder(moveOrder)[1];
+
         while (!queue.isEmpty()) {
             State currentState = queue.poll();
             visitedStates++;
-            if (currentState.path.size()> maxDepth) {
+
+            // Zaktualizowanie max głębokości
+            if (currentState.path.size() > maxDepth) {
                 maxDepth = currentState.path.size();
             }
+
+            // Sprawdzamy, czy stan jest celem
             if (Arrays.deepEquals(currentState.board, goalBoard)) {
                 long endTime = System.nanoTime();
                 double executionTime = (endTime - startTime) / 1000000.0;
                 try {
-                    Utils.writeSolutionFile("dfs-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
-                    Utils.writeAdditionalInfoFile("dfs-dodatkowe-info.txt", currentState.path.size(), visitedStates, 0, maxDepth
-                            ,executionTime);
+                    Utils.writeSolutionFile("bfs-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
+                    Utils.writeAdditionalInfoFile("bfs-dodatkowe-info.txt", currentState.path.size(), visitedStates, 0, maxDepth, executionTime);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 return currentState.path;
             }
 
-            for (State nextState : getNextStates(currentState, width, height)) {
+            // Dodanie nowych stanów do kolejki
+            for (State nextState : getNextStates(currentState, width, height, moves, moveNames)) {
                 if (!visited.contains(nextState.boardToString())) {
                     visited.add(nextState.boardToString());
                     queue.offer(nextState);
@@ -139,6 +154,27 @@ public class Algorithms {
             }
         }
 
-        return new ArrayList<>();
+        return new ArrayList<>();  // Brak rozwiązania
     }
+
+    private static Object[] getMoveOrder(String moveOrder) {
+        // Porządki przeszukiwania
+        if (moveOrder.equals("RDUL")) {
+            return new Object[]{
+                    new int[][]{{0, 1}, {1, 0}, {-1, 0}, {0, -1}}, // R D U L
+                    new String[]{"R", "D", "U", "L"}
+            };
+        } else if (moveOrder.equals("LUDR")) {
+            return new Object[]{
+                    new int[][]{{0, -1}, {-1, 0}, {1, 0}, {0, 1}}, // L U D R
+                    new String[]{"L", "U", "D", "R"}
+            };
+        } else {
+            return new Object[]{
+                    defaultMoves,  // Default order U D L R
+                    defaultMoveNames
+            };
+        }
+    }
+
 }
