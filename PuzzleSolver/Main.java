@@ -1,51 +1,72 @@
 package PuzzleSolver;
-import java.util.List;
+
+import java.io.*;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        // Inicjalizacja układanki 15 (rozmiar 4x4)
-        int[][] startState = {
-                {5, 1, 3, 4},
-                {9, 2, 6, 8},
-                {13, 14, 7, 11},
-                {0, 15, 10, 12}
-        };
+        if (args.length != 5) {
+            System.out.println("Użycie:");
+            System.out.println("Dla BFS/DFS: program <bfs|dfs> <ROZKAZ> <plik_we> <plik_sol> <plik_stat>");
+            System.out.println("Dla A*: program astr <manh|hamm> <plik_we> <plik_sol> <plik_stat>");
+            return;
+        }
 
-        int width = 4; // szerokość planszy
-        int height = 4; // wysokość planszy
-        int maxDepth = 20; // maksymalna głębokość dla DFS (można dostosować)
+        String algorithm = args[0];
+        String param = args[1];
+        String inputPath = args[2];
+        String solutionPath = args[3];  // To już nie będzie używane
+        String statsPath = args[4];  // To również nie będzie używane
 
-        // Wywołanie funkcji DFS
-        System.out.println("Rozwiązywanie za pomocą DFS:");
-        long startTime = System.nanoTime();
-        List<String> resultDFS = Algorithms.solveDFS(startState, width, height, maxDepth);
-        long endTime = System.nanoTime();
-        double executionTime = (endTime - startTime) / 1000000.0;
-        System.out.println(resultDFS.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultDFS.size() + " ruchach: " + String.join(" ", resultDFS));
-        System.out.println("Czas szukania rozwiazania: "+ executionTime + "ms");
-// Wywołanie funkcji BFS
-        System.out.println("\nRozwiązywanie za pomocą BFS:");
-        startTime = System.nanoTime();
-        List<String> resultBFS = Algorithms.solveBFS(startState, width, height);
-        endTime = System.nanoTime();
-        executionTime = (endTime - startTime) / 1000000.0;
-        System.out.println(resultBFS.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultBFS.size() + " ruchach: " + String.join(" ", resultBFS));
-        System.out.println("Czas szukania rozwiazania: "+ executionTime + "ms");
-// Wywołanie funkcji Hamming
-        System.out.println("\nRozwiązywanie za pomocą Hamming:");
-        startTime = System.nanoTime();
-        List<String> resultHamming = Heuristics.solveHeuristics(startState, width, height, true);
-        endTime = System.nanoTime();
-        executionTime = (endTime - startTime) / 1000000.0;
-        System.out.println(resultHamming.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultHamming.size() + " ruchach: " + String.join(" ", resultHamming));
-        System.out.println("Czas szukania rozwiazania: "+ executionTime + "ms");
-// Wywołanie funkcji Manhattan
-        System.out.println("\nRozwiązywanie za pomocą Manhattan:");
-        startTime = System.nanoTime();
-        List<String> resultManhattan = Heuristics.solveHeuristics(startState, width, height, false);
-        endTime = System.nanoTime();
-        executionTime = (endTime - startTime) / 1000000.0;
-        System.out.println(resultManhattan.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultManhattan.size() + " ruchach: " + String.join(" ", resultManhattan));
-        System.out.println("Czas szukania rozwiazania: "+ executionTime + "ms");
+        try {
+            // Wczytaj dane
+            BufferedReader reader = new BufferedReader(new FileReader(inputPath));
+            String[] dimensions = reader.readLine().split(" ");
+            int height = Integer.parseInt(dimensions[0]);
+            int width = Integer.parseInt(dimensions[1]);
+
+            int[][] startBoard = new int[height][width];
+            for (int i = 0; i < height; i++) {
+                String[] line = reader.readLine().split(" ");
+                for (int j = 0; j < width; j++) {
+                    startBoard[i][j] = Integer.parseInt(line[j]);
+                }
+            }
+            reader.close();
+
+            // Przykładowe wywołanie algorytmu (tu np. BFS) dla wczytanego stanu
+            List<String> result = new ArrayList<>();
+
+            switch (algorithm.toLowerCase()) {
+                case "bfs":
+                    result = Algorithms.solveBFS(startBoard, width, height);
+                    break;
+                case "dfs":
+                    int maxDepth = 30; // Można parametr ustawić dynamicznie
+                    result = Algorithms.solveDFS(startBoard, width, height, maxDepth);
+                    break;
+                case "astr":
+                    boolean useHamming;
+                    if (param.equalsIgnoreCase("hamm")) {
+                        useHamming = true;
+                    } else if (param.equalsIgnoreCase("manh")) {
+                        useHamming = false;
+                    } else {
+                        System.out.println("Nieznana heurystyka: " + param);
+                        return;
+                    }
+                    result = Heuristics.solveHeuristics(startBoard, width, height, useHamming);
+                    break;
+                default:
+                    System.out.println("Nieznany algorytm: " + algorithm);
+                    return;
+            }
+
+            // Tutaj możesz dodać kod do dalszego wykorzystania rozwiązania (np. wyświetlenie wyników)
+            System.out.println("Rozwiązanie: " + (result.isEmpty() ? "Brak rozwiązania" : String.join(" ", result)));
+
+        } catch (IOException e) {
+            System.out.println("Błąd przy wczytywaniu pliku: " + e.getMessage());
+        }
     }
 }

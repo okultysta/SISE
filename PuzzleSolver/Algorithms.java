@@ -4,8 +4,16 @@ import java.io.IOException;
 import java.util.*;
 
 public class Algorithms {
-    private static final int[][] moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-    private static final String[] moveNames = {"U", "D", "L", "R"};
+    private static int[][] moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    private static String[] moveNames = {"U", "D", "L", "R"};
+
+    public static void setMoves(int[][] moves) {
+        Algorithms.moves = moves;
+    }
+
+    public static void setMoveNames(String[] moveNames) {
+        Algorithms.moveNames = moveNames;
+    }
 
     private static List<State> getNextStates(State state, int width, int height) {
         List<State> nextStates = new ArrayList<>();
