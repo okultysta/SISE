@@ -3,54 +3,81 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        // Inicjalizacja układanki 15 (rozmiar 4x4)
-        int[][] startState = {
-                {5, 1, 3, 4},
-                {9, 2, 6, 8},
-                {13, 14, 7, 11},
-                {0, 15, 10, 12}
-        };
-
-        int width = 4; // szerokość planszy
-        int height = 4; // wysokość planszy
-        int maxDepth = 20;// maksymalna głębokość dla DFS (można dostosować)
-        int[][] readState;
-        try {
-            readState = Utils.readStateFromFile("4x4_przykładowa.txt");
-        } catch (IOException e) {
+        if (args.length != 5) {
+            System.out.println("Niepoprawna liczba argumentów. Przykład: java Main <strategia> <porzadek_przeszukiwania> <plik_wejsciowy> <plik_rozwiazania> <plik_statystyk>");
             return;
         }
-        // Wywołanie funkcji DFS
-        System.out.println("Rozwiązywanie za pomocą DFS:");
-        long startTime = System.nanoTime();
-        List<String> resultDFS = Algorithms.solveDFS(startState, width, height, maxDepth);
-        long endTime = System.nanoTime();
-        double executionTime = (endTime - startTime) / 1000000.0;
-        System.out.println(resultDFS.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultDFS.size() + " ruchach: " + String.join(" ", resultDFS));
-        System.out.println("Czas szukania rozwiazania: " + executionTime + "ms");
-// Wywołanie funkcji BFS
-        System.out.println("\nRozwiązywanie za pomocą BFS:");
-        startTime = System.nanoTime();
-        List<String> resultBFS = Algorithms.solveBFS(startState, width, height);
-        endTime = System.nanoTime();
-        executionTime = (endTime - startTime) / 1000000.0;
-        System.out.println(resultBFS.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultBFS.size() + " ruchach: " + String.join(" ", resultBFS));
-        System.out.println("Czas szukania rozwiazania: " + executionTime + "ms");
-// Wywołanie funkcji Hamming
-        System.out.println("\nRozwiązywanie za pomocą Hamming:");
-        startTime = System.nanoTime();
-        List<String> resultHamming = Heuristics.solveHeuristics(startState, width, height, true);
-        endTime = System.nanoTime();
-        executionTime = (endTime - startTime) / 1000000.0;
-        System.out.println(resultHamming.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultHamming.size() + " ruchach: " + String.join(" ", resultHamming));
-        System.out.println("Czas szukania rozwiazania: " + executionTime + "ms");
-// Wywołanie funkcji Manhattan
-        System.out.println("\nRozwiązywanie za pomocą Manhattan:");
-        startTime = System.nanoTime();
-        List<String> resultManhattan = Heuristics.solveHeuristics(startState, width, height, false);
-        endTime = System.nanoTime();
-        executionTime = (endTime - startTime) / 1000000.0;
-        System.out.println(resultManhattan.isEmpty() ? "Brak rozwiązania!" : "Znaleziono rozwiązanie w " + resultManhattan.size() + " ruchach: " + String.join(" ", resultManhattan));
-        System.out.println("Czas szukania rozwiazania: " + executionTime + "ms");
+
+        String strategy = args[0];
+        String order = args[1];
+        String inputFile = args[2];
+        String solutionFile = args[3];
+        String statsFile = args[4];
+
+        int[][] startState;
+        int width = 4; // szerokość planszy
+        int height = 4; // wysokość planszy
+        int maxDepth = 20; // maksymalna głębokość dla DFS
+
+        try {
+            startState = Utils.readStateFromFile(inputFile);
+        } catch (IOException e) {
+            System.out.println("Błąd podczas wczytywania pliku wejściowego: " + e.getMessage());
+            return;
+        }
+
+        List<String> result;
+        long startTime, endTime;
+        double executionTime;
+        int visitedStates = 0, processedStates = 0, maxSearchDepth = 0;
+
+        switch (strategy.toLowerCase()) {
+            case "bfs":
+                // BFS - wszerz
+                System.out.println("Rozwiązywanie za pomocą BFS:");
+                startTime = System.nanoTime();
+                result = Algorithms.solveBFS(startState, width, height, order);
+                endTime = System.nanoTime();
+                executionTime = (endTime - startTime) / 1000000.0;
+                break;
+
+            case "dfs":
+                // DFS - w głąb
+                System.out.println("Rozwiązywanie za pomocą DFS:");
+                startTime = System.nanoTime();
+                result = Algorithms.solveDFS(startState, width, height, maxDepth, order);
+                endTime = System.nanoTime();
+                executionTime = (endTime - startTime) / 1000000.0;
+                break;
+
+            case "astr":
+                // A* - strategia z heurystyką
+                System.out.println("Rozwiązywanie za pomocą A*:");
+                startTime = System.nanoTime();
+                result = Heuristics.solveHeuristics(startState, width, height, order.equalsIgnoreCase("manh"));
+                endTime = System.nanoTime();
+                executionTime = (endTime - startTime) / 1000000.0;
+                break;
+
+            default:
+                System.out.println("Nieznana strategia: " + strategy);
+                return;
+        }
+
+        if (result.isEmpty()) {
+            System.out.println("Brak rozwiązania!");
+        } else {
+            System.out.println("Znaleziono rozwiązanie w " + result.size() + " ruchach: " + String.join(" ", result));
+        }
+
+        System.out.println("Czas szukania rozwiązania: " + executionTime + "ms");
+
+        // Zapis wyników do plików
+        try {
+            Utils.writeSolutionFile(solutionFile, result.size(), String.join(" ", result));
+            Utils.writeAdditionalInfoFile(statsFile, result.size(), visitedStates, processedStates, maxSearchDepth, executionTime);
+        } catch (IOException e) {
+            System.out.println("Błąd podczas zapisywania wyników do pliku: " + e.getMessage());
+        }
     }
 }
