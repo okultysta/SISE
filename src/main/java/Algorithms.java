@@ -103,7 +103,6 @@ public class Algorithms {
         int[][] goalBoard = generateGoalBoard(width, height);
         int zeroX = 0, zeroY = 0;
 
-        // Znajdowanie pozycji 0
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 if (startState[i][j] == 0) {
@@ -158,23 +157,27 @@ public class Algorithms {
     }
 
     private static Object[] getMoveOrder(String moveOrder) {
-        // Porządki przeszukiwania
-        if (moveOrder.equals("RDUL")) {
-            return new Object[]{
-                    new int[][]{{0, 1}, {1, 0}, {-1, 0}, {0, -1}}, // R D U L
-                    new String[]{"R", "D", "U", "L"}
-            };
-        } else if (moveOrder.equals("LUDR")) {
-            return new Object[]{
-                    new int[][]{{0, -1}, {-1, 0}, {1, 0}, {0, 1}}, // L U D R
-                    new String[]{"L", "U", "D", "R"}
-            };
-        } else {
-            return new Object[]{
-                    defaultMoves,  // Default order U D L R
-                    defaultMoveNames
-            };
+        Map<Character, int[]> directionMap = new HashMap<>();
+        directionMap.put('U', new int[]{-1, 0});
+        directionMap.put('D', new int[]{1, 0});
+        directionMap.put('L', new int[]{0, -1});
+        directionMap.put('R', new int[]{0, 1});
+
+        if (moveOrder.length() != 4 || !moveOrder.matches("[UDLR]{4}")) {
+            throw new IllegalArgumentException("Niepoprawny porządek przeszukiwania: " + moveOrder);
         }
+
+        int[][] moveVectors = new int[4][2];
+        String[] moveNames = new String[4];
+
+        for (int i = 0; i < 4; i++) {
+            char dir = moveOrder.charAt(i);
+            moveVectors[i] = directionMap.get(dir);
+            moveNames[i] = String.valueOf(dir);
+        }
+
+        return new Object[]{moveVectors, moveNames};
     }
+
 
 }
