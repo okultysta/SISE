@@ -33,9 +33,8 @@ class Heuristics {
     }
 
     static List<String> solveHeuristics(int[][] startState, int width, int height, boolean mode) {
-        int visitedStates = 0;
         int maxDepth = 0;
-        int processedStates = 0;
+        int procesedStates = 0;
         long startTime = System.nanoTime();
         int[][] goalBoard = new int[height][width];
         int number = 1;
@@ -57,9 +56,12 @@ class Heuristics {
         }
 
         PriorityQueue<StateH> pq = new PriorityQueue<>(Comparator.comparingInt(s -> s.hValue));
+        Set<String> visited = new HashSet<>();
         StateH start = new StateH(startState, zeroX, zeroY, new ArrayList<>());
         start.hValue = mode ? start.calculateHamming(goalBoard) : start.calculateManhattan(goalBoard);
         pq.add(start);
+        visited.add(start.boardToString());
+
         String whichHeuristic = "";
         if (mode) {
             whichHeuristic = "hamming";
@@ -69,7 +71,6 @@ class Heuristics {
         while (!pq.isEmpty()) {
             StateH currentState = pq.poll();
 
-            visitedStates++;
             if (currentState.path.size() > maxDepth) {
                 maxDepth = currentState.path.size();
             }
@@ -80,7 +81,7 @@ class Heuristics {
 
                 try {
                     Utils.writeSolutionFile("heurystyki" + whichHeuristic + "-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
-                    Utils.writeAdditionalInfoFile("heurystyki" + whichHeuristic + "-dodatkowe-info.txt", currentState.path.size(), visitedStates, 0, maxDepth
+                    Utils.writeAdditionalInfoFile("heurystyki" + whichHeuristic + "-dodatkowe-info.txt", currentState.path.size(), visited.size(), procesedStates, maxDepth
                             , executionTime);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -88,6 +89,14 @@ class Heuristics {
                 return currentState.path;
             }
 
+
+            for (StateH nextState : getNextStates(currentState, width, height, goalBoard, mode)) {
+                procesedStates++;
+                if (!visited.contains(nextState.boardToString())) {
+                    visited.add(nextState.boardToString());
+                    pq.add(nextState);
+                }
+            }
 
             List<StateH> nextStates = getNextStates(currentState, width, height, goalBoard, mode);
             pq.addAll(nextStates);
