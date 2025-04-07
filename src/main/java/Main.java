@@ -72,12 +72,6 @@ public class Main {
 
         System.out.println("Czas szukania rozwiązania: " + executionTime + "ms");
 
-        // Zapis wyników do plików
-        try {
-            Utils.writeSolutionFile(solutionFile, result.size(), String.join(" ", result));
-            Utils.writeAdditionalInfoFile(statsFile, result.size(), visitedStates, processedStates, maxSearchDepth, executionTime);
-        } catch (IOException e) {
-            System.out.println("Błąd podczas zapisywania wyników do pliku: " + e.getMessage());
-        }
+
     }
 }
