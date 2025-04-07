@@ -35,6 +35,7 @@ class Heuristics {
     static List<String> solveHeuristics(int[][] startState, int width, int height, boolean mode) {
         int visitedStates = 0;
         int maxDepth = 0;
+        int processedStates = 0;
         long startTime = System.nanoTime();
         int[][] goalBoard = new int[height][width];
         int number = 1;

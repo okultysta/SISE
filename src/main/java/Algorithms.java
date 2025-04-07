@@ -44,9 +44,9 @@ public class Algorithms {
 
     public static List<String> solveDFS(int[][] startState, int width, int height, int maxDepth, String moveOrder) {
         long startTime = System.nanoTime();
-        int visitedStates = 0;
         int[][] goalBoard = generateGoalBoard(width, height);
         int zeroX = 0, zeroY = 0;
+        int procesedStates = 0;
 
         // Znajdowanie pozycji 0
         for (int i = 0; i < height; i++) {
@@ -59,15 +59,16 @@ public class Algorithms {
         }
 
         Stack<State> stack = new Stack<>();
+        Set<String> visited = new HashSet<>();
         State start = new State(startState, zeroX, zeroY, new ArrayList<>());
         stack.push(start);
+        visited.add(start.boardToString());
 
         int[][] moves = (int[][]) getMoveOrder(moveOrder)[0];
         String[] moveNames = (String[]) getMoveOrder(moveOrder)[1];
 
         while (!stack.isEmpty()) {
             State currentState = stack.pop();
-            visitedStates++;
 
             // Sprawdzenie, czy stan jest celem
             if (Arrays.deepEquals(currentState.board, goalBoard)) {
@@ -75,7 +76,7 @@ public class Algorithms {
                 double executionTime = (endTime - startTime) / 1000000.0;
                 try {
                     Utils.writeSolutionFile("dfs-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
-                    Utils.writeAdditionalInfoFile("dfs-dodatkowe-info.txt", currentState.path.size(), visitedStates, 0, maxDepth, executionTime);
+                    Utils.writeAdditionalInfoFile("dfs-dodatkowe-info.txt", currentState.path.size(), visited.size(), procesedStates, maxDepth, executionTime);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -89,7 +90,11 @@ public class Algorithms {
 
             // Dodanie nowych stanów do stosu
             for (State nextState : getNextStates(currentState, width, height, moves, moveNames)) {
-                stack.push(nextState);
+                procesedStates++;
+                if (!visited.contains(nextState.boardToString())) {
+                    visited.add(nextState.boardToString());
+                    stack.push(nextState);
+                }
             }
         }
 
@@ -98,8 +103,8 @@ public class Algorithms {
 
     public static List<String> solveBFS(int[][] startState, int width, int height, String moveOrder) {
         long startTime = System.nanoTime();
-        int visitedStates = 0;
         int maxDepth = 0;
+        int procesedStates = 0;
         int[][] goalBoard = generateGoalBoard(width, height);
         int zeroX = 0, zeroY = 0;
 
@@ -124,7 +129,6 @@ public class Algorithms {
 
         while (!queue.isEmpty()) {
             State currentState = queue.poll();
-            visitedStates++;
 
             // Zaktualizowanie max głębokości
             if (currentState.path.size() > maxDepth) {
@@ -137,7 +141,7 @@ public class Algorithms {
                 double executionTime = (endTime - startTime) / 1000000.0;
                 try {
                     Utils.writeSolutionFile("bfs-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
-                    Utils.writeAdditionalInfoFile("bfs-dodatkowe-info.txt", currentState.path.size(), visitedStates, 0, maxDepth, executionTime);
+                    Utils.writeAdditionalInfoFile("bfs-dodatkowe-info.txt", currentState.path.size(), visited.size(), procesedStates, maxDepth, executionTime);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -146,6 +150,7 @@ public class Algorithms {
 
             // Dodanie nowych stanów do kolejki
             for (State nextState : getNextStates(currentState, width, height, moves, moveNames)) {
+                procesedStates++;
                 if (!visited.contains(nextState.boardToString())) {
                     visited.add(nextState.boardToString());
                     queue.offer(nextState);
