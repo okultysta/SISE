@@ -32,7 +32,7 @@ class Heuristics {
         return nextStates;
     }
 
-    static List<String> solveHeuristics(int[][] startState, int width, int height, boolean mode) {
+    static List<String> solveHeuristics(int[][] startState, int width, int height, boolean mode, String filename, String infoFileName) {
         int maxDepth = 0;
         int procesedStates = 0;
         long startTime = System.nanoTime();
@@ -80,8 +80,8 @@ class Heuristics {
                 double executionTime = (endTime - startTime) / 1000000.0;
 
                 try {
-                    Utils.writeSolutionFile("heurystyki" + whichHeuristic + "-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
-                    Utils.writeAdditionalInfoFile("heurystyki" + whichHeuristic + "-dodatkowe-info.txt", currentState.path.size(), visited.size(), procesedStates, maxDepth
+                    Utils.writeSolutionFile(filename, currentState.path.size(), String.valueOf(currentState.path));
+                    Utils.writeAdditionalInfoFile(infoFileName, currentState.path.size(), visited.size(), procesedStates, maxDepth
                             , executionTime);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -102,7 +102,11 @@ class Heuristics {
             pq.addAll(nextStates);
         }
         try {
-            Utils.writeSolutionFile("heurystyki" + whichHeuristic + "-rozwiazanie.txt", -1, "");
+            long endTime = System.nanoTime();
+            double executionTime = (endTime - startTime) / 1000000.0;
+            Utils.writeSolutionFile(infoFileName, -1, "");
+            Utils.writeAdditionalInfoFile(infoFileName, -1, visited.size(), procesedStates, maxDepth
+                    , executionTime);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

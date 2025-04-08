@@ -42,7 +42,7 @@ public class Algorithms {
         return goalBoard;
     }
 
-    public static List<String> solveDFS(int[][] startState, int width, int height, int maxDepth, String moveOrder) {
+    public static List<String> solveDFS(int[][] startState, int width, int height, int maxDepth, String moveOrder, String filename, String infoFileName) {
         long startTime = System.nanoTime();
         int[][] goalBoard = generateGoalBoard(width, height);
         int zeroX = 0, zeroY = 0;
@@ -75,8 +75,8 @@ public class Algorithms {
                 long endTime = System.nanoTime();
                 double executionTime = (endTime - startTime) / 1000000.0;
                 try {
-                    Utils.writeSolutionFile("dfs-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
-                    Utils.writeAdditionalInfoFile("dfs-dodatkowe-info.txt", currentState.path.size(), visited.size(), procesedStates, maxDepth, executionTime);
+                    Utils.writeSolutionFile(filename, currentState.path.size(), String.valueOf(currentState.path));
+                    Utils.writeAdditionalInfoFile(infoFileName, currentState.path.size(), visited.size(), procesedStates, maxDepth, executionTime);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -97,11 +97,18 @@ public class Algorithms {
                 }
             }
         }
-
+        long endTime = System.nanoTime();
+        double executionTime = (endTime - startTime) / 1000000.0;
+        try {
+            Utils.writeSolutionFile(filename, -1, "");
+            Utils.writeAdditionalInfoFile(infoFileName, -1, visited.size(), procesedStates, maxDepth, executionTime);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return new ArrayList<>();  // Brak rozwiązania
     }
 
-    public static List<String> solveBFS(int[][] startState, int width, int height, String moveOrder) {
+    public static List<String> solveBFS(int[][] startState, int width, int height, String moveOrder,  String filename, String infoFileName) {
         long startTime = System.nanoTime();
         int maxDepth = 0;
         int procesedStates = 0;
@@ -140,8 +147,8 @@ public class Algorithms {
                 long endTime = System.nanoTime();
                 double executionTime = (endTime - startTime) / 1000000.0;
                 try {
-                    Utils.writeSolutionFile("bfs-rozwiazanie.txt", currentState.path.size(), String.valueOf(currentState.path));
-                    Utils.writeAdditionalInfoFile("bfs-dodatkowe-info.txt", currentState.path.size(), visited.size(), procesedStates, maxDepth, executionTime);
+                    Utils.writeSolutionFile(filename, currentState.path.size(), String.valueOf(currentState.path));
+                    Utils.writeAdditionalInfoFile(infoFileName, currentState.path.size(), visited.size(), procesedStates, maxDepth, executionTime);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -157,7 +164,14 @@ public class Algorithms {
                 }
             }
         }
-
+        long endTime = System.nanoTime();
+        double executionTime = (endTime - startTime) / 1000000.0;
+        try {
+            Utils.writeSolutionFile(filename, -1, "");
+            Utils.writeAdditionalInfoFile(infoFileName, -1, visited.size(), procesedStates, maxDepth, executionTime);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return new ArrayList<>();  // Brak rozwiązania
     }
 

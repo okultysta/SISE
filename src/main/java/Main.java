@@ -36,7 +36,7 @@ public class Main {
                 // BFS - wszerz
                 System.out.println("Rozwiązywanie za pomocą BFS:");
                 startTime = System.nanoTime();
-                result = Algorithms.solveBFS(startState, width, height, order);
+                result = Algorithms.solveBFS(startState, width, height, order, solutionFile, statsFile);
                 endTime = System.nanoTime();
                 executionTime = (endTime - startTime) / 1000000.0;
                 break;
@@ -45,7 +45,7 @@ public class Main {
                 // DFS - w głąb
                 System.out.println("Rozwiązywanie za pomocą DFS:");
                 startTime = System.nanoTime();
-                result = Algorithms.solveDFS(startState, width, height, maxDepth, order);
+                result = Algorithms.solveDFS(startState, width, height, maxDepth, order, solutionFile, statsFile);
                 endTime = System.nanoTime();
                 executionTime = (endTime - startTime) / 1000000.0;
                 break;
@@ -54,7 +54,7 @@ public class Main {
                 // A* - strategia z heurystyką
                 System.out.println("Rozwiązywanie za pomocą A*:");
                 startTime = System.nanoTime();
-                result = Heuristics.solveHeuristics(startState, width, height, order.equalsIgnoreCase("manh"));
+                result = Heuristics.solveHeuristics(startState, width, height, order.equalsIgnoreCase("manh"), solutionFile, statsFile);
                 endTime = System.nanoTime();
                 executionTime = (endTime - startTime) / 1000000.0;
                 break;
