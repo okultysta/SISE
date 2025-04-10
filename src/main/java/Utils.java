@@ -36,13 +36,11 @@ public class Utils {
             return puzzle;
         }
     }
-    public static void writeSolutionFile(String filename, int solutionLength, String moves) throws IOException {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
-            bw.write(Integer.toString(solutionLength));
-            bw.newLine();
-            if (solutionLength != -1) {
-                bw.write(moves);
-            }
+    public static void writeSolutionFile(String filename, String content) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            writer.write(content);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

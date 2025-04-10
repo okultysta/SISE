@@ -75,7 +75,7 @@ public class Algorithms {
                 long endTime = System.nanoTime();
                 double executionTime = (endTime - startTime) / 1000000.0;
                 try {
-                    Utils.writeSolutionFile(filename, currentState.path.size(), String.valueOf(currentState.path));
+                    Visualisation.saveSolution(filename, startState, currentState.path);
                     Utils.writeAdditionalInfoFile(infoFileName, currentState.path.size(), visited.size(), procesedStates, maxDepth, executionTime);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -93,14 +93,14 @@ public class Algorithms {
                 procesedStates++;
                 if (!visited.contains(nextState.boardToString())) {
                     visited.add(nextState.boardToString());
-                    stack.push(nextState);
                 }
+                stack.push(nextState);
             }
         }
         long endTime = System.nanoTime();
         double executionTime = (endTime - startTime) / 1000000.0;
         try {
-            Utils.writeSolutionFile(filename, -1, "");
+            Utils.writeSolutionFile(filename,  "-1");
             Utils.writeAdditionalInfoFile(infoFileName, -1, visited.size(), procesedStates, maxDepth, executionTime);
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,7 +147,7 @@ public class Algorithms {
                 long endTime = System.nanoTime();
                 double executionTime = (endTime - startTime) / 1000000.0;
                 try {
-                    Utils.writeSolutionFile(filename, currentState.path.size(), String.valueOf(currentState.path));
+                    Visualisation.saveSolution(filename, startState, currentState.path);
                     Utils.writeAdditionalInfoFile(infoFileName, currentState.path.size(), visited.size(), procesedStates, maxDepth, executionTime);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -167,7 +167,7 @@ public class Algorithms {
         long endTime = System.nanoTime();
         double executionTime = (endTime - startTime) / 1000000.0;
         try {
-            Utils.writeSolutionFile(filename, -1, "");
+            Utils.writeSolutionFile(filename, "-1");
             Utils.writeAdditionalInfoFile(infoFileName, -1, visited.size(), procesedStates, maxDepth, executionTime);
         } catch (Exception e) {
             e.printStackTrace();

@@ -72,6 +72,5 @@ public class Main {
 
         System.out.println("Czas szukania rozwiązania: " + executionTime + "ms");
 
-
     }
 }

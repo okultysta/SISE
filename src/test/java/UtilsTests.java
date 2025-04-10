@@ -32,7 +32,7 @@ class UtilsTest {
     @Test
     void testWriteSolutionFile_validSolution() throws IOException {
         String outputFile = TEMP_DIR + "/test_solution.txt";
-        Utils.writeSolutionFile(outputFile, 5, "[L, R, U, D, D]");
+        Utils.writeSolutionFile(outputFile, "[L, R, U, D, D]");
 
         List<String> lines = Files.readAllLines(Path.of(outputFile));
         assertEquals("5", lines.get(0));
@@ -42,7 +42,7 @@ class UtilsTest {
     @Test
     void testWriteSolutionFile_noSolution() throws IOException {
         String outputFile = TEMP_DIR + "/test_no_solution.txt";
-        Utils.writeSolutionFile(outputFile, -1, "");
+        Utils.writeSolutionFile(outputFile,  "-1");
 
         List<String> lines = Files.readAllLines(Path.of(outputFile));
         assertEquals("-1", lines.get(0));

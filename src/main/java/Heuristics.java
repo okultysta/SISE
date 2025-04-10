@@ -80,7 +80,7 @@ class Heuristics {
                 double executionTime = (endTime - startTime) / 1000000.0;
 
                 try {
-                    Utils.writeSolutionFile(filename, currentState.path.size(), String.valueOf(currentState.path));
+                    Visualisation.saveSolution(filename, startState, currentState.path);
                     Utils.writeAdditionalInfoFile(infoFileName, currentState.path.size(), visited.size(), procesedStates, maxDepth
                             , executionTime);
                 } catch (IOException e) {
@@ -104,7 +104,7 @@ class Heuristics {
         try {
             long endTime = System.nanoTime();
             double executionTime = (endTime - startTime) / 1000000.0;
-            Utils.writeSolutionFile(infoFileName, -1, "");
+            Utils.writeSolutionFile(infoFileName,  "-1");
             Utils.writeAdditionalInfoFile(infoFileName, -1, visited.size(), procesedStates, maxDepth
                     , executionTime);
         } catch (IOException e) {
